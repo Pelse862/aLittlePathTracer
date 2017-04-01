@@ -12,6 +12,9 @@ void saveImage(glm::vec3 image[], int size_2);
 
 void printVec(glm::vec3 v);
 void normalizeImage(glm::vec3 image[], float maxR, float maxG, float maxB, int imageSize);
+float getRandomFloatInc();
+float getRandomFloatAzi();
+float getRandomsStepVal(int maxStep);
 
 struct Camera
 {

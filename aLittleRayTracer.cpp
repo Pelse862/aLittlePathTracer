@@ -7,8 +7,9 @@
 #define EPSILON 0.00000000000000001
 #define M_PI 3.14159265358979323846  /* pi */
 
-const int D_MAX_BOUNCE = 16;
-const int size = (256 * 256);
+const int C_MULTISAMPLE_COUNT = 8;
+const int C_MAX_BOUNCE = 8;
+const int C_IMAGE_SIZE = (256 * 256);
 
 
 
@@ -27,8 +28,7 @@ int main()
 {
 	
 	std::cout << "hello human" << std::endl;
-	renderImage();
-	
+	renderImage();	
 	int a;
 	std::cin >> a;
 	return 0;
@@ -37,10 +37,9 @@ int main()
 void renderImage()
 {
 	
-	glm::vec3 image[size];
+	glm::vec3 image[C_IMAGE_SIZE] = { glm::vec3(0,0,0) };
 	Camera c;
-	int j = 0;
-	int size_2 = size / 256;
+	int size_2 = C_IMAGE_SIZE / 256;
 	SceneManager Scene;
 	Triangle *sceneTriangles = Scene.getScene();
 	glm::vec3* startPoint = &c.position;
@@ -51,8 +50,10 @@ void renderImage()
 	float dirZ = 0;
 	int count = 0;
 	float maxR = 0, maxG = 0, maxB = 0;
+
+
 	#pragma omp parallel for
-	for (int i = 0; i < size ; ++i)
+	for (int i = 0; i < C_IMAGE_SIZE ; ++i)
 	{	
 		++n;
 		if (n == size_2)
@@ -60,47 +61,42 @@ void renderImage()
 			n = 0;
 			++k;
 		}
-		dirY = -1.f +( 2.f*(n / size_2) );
-		dirZ = -1.f +( 2.f*(k / size_2) );
 		
-		direction = &glm::normalize(glm::vec3( 0.f , dirY, dirZ) - *startPoint);
+
 		
-		image[i] = getPixelVal(startPoint, direction, sceneTriangles, count);
-		
-		
+		for (int multiSampleCount = 0; multiSampleCount < C_MULTISAMPLE_COUNT; ++multiSampleCount)
+		{
+			dirY = -1.f + (2.f*(n / size_2)) + getRandomsStepVal(n / size_2);
+			dirZ = -1.f + (2.f*(k / size_2)) + getRandomsStepVal(k / size_2);
+			direction = &glm::normalize(glm::vec3(0.f, dirY, dirZ) - *startPoint);
+			image[i] += getPixelVal(startPoint, direction, sceneTriangles, count);
+		}
+
 		maxR = image[i].x > maxR ? image[i].x : maxR;
 		maxG = image[i].y > maxG ? image[i].y : maxG;
 		maxB = image[i].z > maxB ? image[i].z : maxB;
 	}
 
-	normalizeImage(image, maxR, maxG, maxB, size);
-	saveImage( image, size/256);
+	normalizeImage(image, maxR, maxG, maxB, C_IMAGE_SIZE);
+	saveImage( image, C_IMAGE_SIZE/256);
 }
 
 
 glm::vec3 getPixelVal(glm::vec3* start, glm::vec3* dir, Triangle *scene, int count)
 {	
-	if (count >= D_MAX_BOUNCE)return glm::vec3(0.f,0.f,0.f);
+	if (count >= C_MAX_BOUNCE)return glm::vec3(0.f,0.f,0.f);
 	++count;
 
 	glm::vec3 colorLocal = glm::vec3(0.f, 0.f, 0.f);
 	glm::vec3 newStart = glm::vec3(0.f, 0.f, 0.f);
 	glm::vec3 normal = glm::vec3(0.f, 0.f, 0.f);
-	//printVec(*dir);
-	//printVec(*start);
-	
-	//printVec(*triangleIntersect(start, dir, scene));
-	//colorLocal = *triangleIntersect(start, dir, newPos, normal, scene);
-	
-	//start = &newPos;
-	//dir = &getRayBounceLambert(dir, &normal);
-	//printVec(*triangleIntersect(start, dir, newStart, normal, scene));
+
 	colorLocal = triangleIntersect(start, dir, newStart, normal, scene);
 
 
 	dir = &getRayBounceLambert();
 
-	return colorLocal + (0.5f/count)*getPixelVal(&newStart, dir, scene, count);
+	return colorLocal + (0.75f/count)*getPixelVal(&newStart, dir, scene, count);
 }
 
 
@@ -175,24 +171,6 @@ glm::vec3 triangleIntersect( glm::vec3* start, glm::vec3* dir, glm::vec3 &newSta
 	return pixelcolor;
 }
 
-float getRandomFloatInc()
-{
-	std::random_device generator;
-	std::mt19937 distribution(generator());
-	std::uniform_real_distribution<float> distance(0.05f, 0.95);
-
-
-	return distance(generator);
-}
-float getRandomFloatAzi()
-{
-	std::random_device generator;
-	std::mt19937 distribution(generator());
-	std::uniform_real_distribution<float> distance(0.0f, 1);
-
-
-	return distance(generator);
-}
 
 glm::vec3 getRayBounceLambert()
 {
