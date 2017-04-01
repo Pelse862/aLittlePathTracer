@@ -259,3 +259,8 @@ paket-files/
 *.vcxproj
 *.vcxproj.filters
 imgui.ini
+
+#images
+
+*.png
+*.ppm
