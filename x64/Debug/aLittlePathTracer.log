@@ -1,8 +1,0 @@
-﻿  aLittleRayTracer.cpp
-c:\users\commando\documents\visual studio 2015\projects\alittlepathtracer\alittlepathtracer\alittleraytracer.cpp(84): warning C4244: '=': conversion from 'float' to 'unsigned char', possible loss of data
-c:\users\commando\documents\visual studio 2015\projects\alittlepathtracer\alittlepathtracer\alittleraytracer.cpp(85): warning C4244: '=': conversion from 'float' to 'unsigned char', possible loss of data
-c:\users\commando\documents\visual studio 2015\projects\alittlepathtracer\alittlepathtracer\alittleraytracer.cpp(86): warning C4244: '=': conversion from 'float' to 'unsigned char', possible loss of data
-c:\users\commando\documents\visual studio 2015\projects\alittlepathtracer\alittlepathtracer\alittleraytracer.cpp(90): warning C4244: 'argument': conversion from 'float' to 'std::size_t', possible loss of data
-c:\users\commando\documents\visual studio 2015\projects\alittlepathtracer\alittlepathtracer\alittleraytracer.cpp(169): warning C4172: returning address of local variable or temporary: pixelcolor
-  aLittlePathTracer.vcxproj -> C:\Users\Commando\Documents\Visual Studio 2015\Projects\aLittlePathTracer\x64\Debug\aLittlePathTracer.exe
-  aLittlePathTracer.vcxproj -> C:\Users\Commando\Documents\Visual Studio 2015\Projects\aLittlePathTracer\x64\Debug\aLittlePathTracer.pdb (Partial PDB)
