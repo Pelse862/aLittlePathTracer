@@ -8,8 +8,8 @@
 #ifndef HELPERS_H_INCLUDED
 #define HELPERS_H_INCLUDED
 
+//a few functions that just do some small things
 void saveImage(glm::vec3 image[], int size_2);
-
 void printVec(glm::vec3 v);
 void normalizeImage(glm::vec3 image[], float maxR, float maxG, float maxB, int imageSize);
 float getRandomFloatInc();
@@ -20,6 +20,7 @@ struct Camera
 {
 	glm::vec3 position = glm::vec3(-1.0f, 0.f, 0.f);
 };
+
 struct Light
 {
 	glm::vec3 position = glm::vec3(3.0f, 2.f, 0.f);

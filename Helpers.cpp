@@ -1,7 +1,7 @@
 #include "Helpers.h"
 
 
-
+//save image to a .ppm
 void saveImage(glm::vec3 image[],int size_2)
 {
 	
@@ -44,6 +44,7 @@ void printVec(glm::vec3 v)
 {
 	std::cout << v.x << " " << v.y << " " << v.z << std::endl;
 }
+//sphere picking inclination, should fix so that it is not uniform
 float getRandomFloatInc()
 {
 	std::random_device generator;
@@ -53,6 +54,7 @@ float getRandomFloatInc()
 
 	return distance(generator);
 }
+//sphere picking azimuth
 float getRandomFloatAzi()
 {
 	std::random_device generator;
@@ -60,6 +62,7 @@ float getRandomFloatAzi()
 	std::uniform_real_distribution<float> distance(0.0f, 1);
 	return distance(generator);
 }
+//multisampling random values
 float getRandomsStepVal(int maxStep) 
 {
 	std::random_device generator;

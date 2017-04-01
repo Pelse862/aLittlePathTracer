@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include "glm.hpp"
 #include "SceneManager.h"
@@ -15,13 +16,14 @@ const int C_IMAGE_SIZE = (256 * 256);
 
 void renderImage();
 void saveImage(glm::vec3  image[],  int size_2 );
-float getRandomFloatInc();
-float getRandomFloatAzi();
 
+//use sphere picking to create an "out" ray
 glm::vec3 getRayBounceLambert();
+//angle in = angle out
 glm::vec3 getRayBounceSpecular(glm::vec3 * dir, glm::vec3 * normal);
-
+//recursive function
 glm::vec3 getPixelVal(glm::vec3* start, glm::vec3* dir, Triangle *scene, int bounceCounter);
+//möller-trumbore
 glm::vec3 triangleIntersect(glm::vec3* start, glm::vec3* dir, glm::vec3 &newStartPos, glm::vec3 &normal, Triangle *t);
 
 int main()
@@ -51,7 +53,7 @@ void renderImage()
 	int count = 0;
 	float maxR = 0, maxG = 0, maxB = 0;
 
-
+	//main render loop
 	#pragma omp parallel for
 	for (int i = 0; i < C_IMAGE_SIZE ; ++i)
 	{	
@@ -63,7 +65,7 @@ void renderImage()
 		}
 		
 
-		
+		//multisampling loop
 		for (int multiSampleCount = 0; multiSampleCount < C_MULTISAMPLE_COUNT; ++multiSampleCount)
 		{
 			dirY = -1.f + (2.f*(n / size_2)) + getRandomsStepVal(n / size_2);
