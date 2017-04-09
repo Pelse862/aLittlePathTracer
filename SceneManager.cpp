@@ -41,6 +41,7 @@ void SceneManager::createBasicRoom()
 		glm::vec3(255.f,255.f,255.f),
 		glm::vec3(255.f,255.f,255.f)
 	};
+
 	glm::vec3 u, v, vecTemp;
 
 	glm::vec3 tempRayPos(0, 0, 0);
@@ -50,6 +51,10 @@ void SceneManager::createBasicRoom()
 		roomTriangles[i/3].vertex2 = vertic[i+1];
 		roomTriangles[i/3].vertex3 = vertic[i+2];
 		roomTriangles[i/3].color = color[i / 3];
+		
+		roomTriangles[i / 3].material.isLambert = true;
+		//if(i == 9)roomTriangles[i / 3].material.isSpecular = true;
+	
 		//std::cout << color[i / 3].x << std::endl;
 		u = roomTriangles[i / 3].vertex2 - roomTriangles[i / 3].vertex1;
 		v = roomTriangles[i / 3].vertex3 - roomTriangles[i / 3].vertex2;

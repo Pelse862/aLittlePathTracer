@@ -7,7 +7,8 @@
 
 const int C_MULTISAMPLE_COUNT = 40;
 const int C_MAX_BOUNCE = 8;
-const int C_IMAGE_SIZE = (256 * 256);
+const int C_IMAGE_SIDE = 512;
+const int C_IMAGE_SIZE = (C_IMAGE_SIDE * C_IMAGE_SIDE);
 
 
 
@@ -20,8 +21,6 @@ glm::vec3 getRayBounceLambert();
 glm::vec3 getRayBounceSpecular(glm::vec3 * dir, glm::vec3 * normal);
 //recursive function
 glm::vec3 getPixelVal(glm::vec3* start, glm::vec3* dir, Triangle *scene, int bounceCounter);
-//möller-trumbore
-glm::vec3 triangleIntersect(glm::vec3* start, glm::vec3* dir, glm::vec3 &newStartPos, glm::vec3 &normal, Triangle *t);
 
 int main()
 {
@@ -30,16 +29,16 @@ int main()
 	std::cout << "Done... human" << std::endl;
 
 	int a;
-	std::cin >> a;
+	//std::cin >> a;
 	return 0;
 }
 
 void renderImage()
 {
 	
-	glm::vec3 image[C_IMAGE_SIZE] = { glm::vec3(0,0,0) };
+	glm::vec3 *image = new glm::vec3[C_IMAGE_SIZE];
 	Camera c;
-	int size_2 = C_IMAGE_SIZE / 256;
+	int size_2 = C_IMAGE_SIZE / C_IMAGE_SIDE;
 	SceneManager Scene;
 	Triangle *sceneTriangles = Scene.getScene();
 	glm::vec3* startPoint = &c.position;
@@ -79,7 +78,7 @@ void renderImage()
 	}
 
 	normalizeImage(image, maxR, maxG, maxB, C_IMAGE_SIZE);
-	saveImage( image, C_IMAGE_SIZE/256);
+	saveImage( image, C_IMAGE_SIZE/ C_IMAGE_SIDE);
 }
 
 
@@ -92,10 +91,22 @@ glm::vec3 getPixelVal(glm::vec3* start, glm::vec3* dir, Triangle *scene, int cou
 	glm::vec3 newStart = glm::vec3(0.f, 0.f, 0.f);
 	glm::vec3 normal = glm::vec3(0.f, 0.f, 0.f);
 	float dimVal = 1.f;
-	colorLocal = triangleIntersect(start, dir, newStart, normal, scene);
+	Material material;
+	colorLocal = triangleIntersect(start, dir, newStart, normal, scene, material);
 	bool hitLight = castShadowRay(&newStart, scene, dimVal);
 	colorLocal = hitLight ? colorLocal * Light::getLightstrength() * dimVal : glm::vec3(0.f, 0.f, 0.f);
-	dir = &getRayBounceLambert();
+	//std::cout << material->isSpecular << std::endl;
+	if (material.isLambert)
+	{
+		dir = &getRayBounceLambert();
+		return colorLocal + (0.6f / count)*getPixelVal(&newStart, dir, scene, count);
+	}
+	else if (material.isSpecular)
+	{
+		
+		dir = &getRayBounceSpecular(dir, &normal);
+		return colorLocal + getPixelVal(&newStart, dir, scene, count);
+	}
 
 	return colorLocal + (0.6f/count)*getPixelVal(&newStart, dir, scene, count);
 }
