@@ -1,6 +1,5 @@
 #pragma once
 #include "glm.hpp"
-#include <iostream>
 const int roomTriangleSize = 12;
 
 struct Triangle

@@ -1,3 +1,5 @@
+
+#pragma once
 #include "SceneManager.h"
 
 
@@ -49,12 +51,12 @@ void SceneManager::createBasicRoom()
 		roomTriangles[i/3].vertex3 = vertic[i+2];
 		roomTriangles[i/3].color = color[i / 3];
 		//std::cout << color[i / 3].x << std::endl;
-		u = roomTriangles[i / 3].vertex3 - roomTriangles[i / 3].vertex1;
-		v = roomTriangles[i / 3].vertex2 - roomTriangles[i / 3].vertex1;
+		u = roomTriangles[i / 3].vertex2 - roomTriangles[i / 3].vertex1;
+		v = roomTriangles[i / 3].vertex3 - roomTriangles[i / 3].vertex2;
 
 		roomTriangles[i / 3].normal = glm::normalize(glm::cross(v, u));
 		vecTemp = glm::normalize(roomTriangles[i / 3].vertex1 - tempRayPos);
-		if (glm::dot(vecTemp, roomTriangles[i / 3].normal) <= 0)roomTriangles[i / 3].normal = -roomTriangles[i / 3].normal;
+		if ((glm::dot(vecTemp, roomTriangles[i / 3].normal)) >= 0)roomTriangles[i / 3].normal = -roomTriangles[i / 3].normal;
 	}
 }
 
