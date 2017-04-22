@@ -1,7 +1,7 @@
 #pragma once
 #include "glm.hpp"
 
-const int roomTriangleSize = 12;
+const int maxNumberTriangles = 300;
 struct Material
 {
 	bool isLambert = false;
@@ -22,13 +22,14 @@ public:
 	{
 		createBasicRoom();
 	}
-
+	int getNumberTriangles() { return numberTriangles; }
 	void createBasicRoom();
-
+	void addTetrahedron(glm::vec3 pos);
 	~SceneManager();
 	Triangle* getScene() { return roomTriangles; }
 private:
-	Triangle roomTriangles[roomTriangleSize];
+	int numberTriangles;
+	Triangle roomTriangles[maxNumberTriangles];
 };
 
 

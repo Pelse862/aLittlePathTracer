@@ -20,7 +20,7 @@ float getRandomFloatInc();
 float getRandomFloatAzi();
 float getRandomsStepVal(int maxStep);
 
-bool castShadowRay(glm::vec3 * triangleHitPosition, Triangle *triangles,float &dimVal);
+bool castShadowRay(glm::vec3 * triangleHitPosition, Triangle *triangles,float &dimVal,int numberTriangles);
 
 struct Camera
 {
@@ -34,5 +34,5 @@ static struct Light
 };
 
 //möller-trumbore
-glm::vec3 triangleIntersect(glm::vec3* start, glm::vec3* dir, glm::vec3 &newStartPos, glm::vec3 &normal, Triangle *triangles, Material &material);
+glm::vec3 triangleIntersect(glm::vec3* start, glm::vec3* dir, glm::vec3 &newStartPos, glm::vec3 &normal, Triangle *triangles, Material &material,int numberTriangles);
 #endif

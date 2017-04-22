@@ -63,8 +63,14 @@ void SceneManager::createBasicRoom()
 		vecTemp = glm::normalize(roomTriangles[i / 3].vertex1 - tempRayPos);
 		if ((glm::dot(vecTemp, roomTriangles[i / 3].normal)) >= 0)roomTriangles[i / 3].normal = -roomTriangles[i / 3].normal;
 	}
+	numberTriangles = 12;
 }
 
+void SceneManager::addTetrahedron(glm::vec3 pos)
+{
+	
+	
+}
 
 SceneManager::~SceneManager()
 {

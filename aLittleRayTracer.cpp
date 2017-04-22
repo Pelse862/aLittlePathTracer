@@ -5,9 +5,9 @@
 #include "Helpers.h"
 
 
-const int C_MULTISAMPLE_COUNT = 40;
-const int C_MAX_BOUNCE = 8;
-const int C_IMAGE_SIDE = 512;
+const int C_MULTISAMPLE_COUNT = 10;
+const int C_MAX_BOUNCE = 10;
+const int C_IMAGE_SIDE = 256;
 const int C_IMAGE_SIZE = (C_IMAGE_SIDE * C_IMAGE_SIDE);
 
 
@@ -20,7 +20,7 @@ glm::vec3 getRayBounceLambert();
 //angle in = angle out
 glm::vec3 getRayBounceSpecular(glm::vec3 * dir, glm::vec3 * normal);
 //recursive function
-glm::vec3 getPixelVal(glm::vec3* start, glm::vec3* dir, Triangle *scene, int bounceCounter);
+glm::vec3 getPixelVal(glm::vec3* start, glm::vec3* dir, Triangle *scene, int bounceCounter,int numberTriangles);
 
 int main()
 {
@@ -40,6 +40,8 @@ void renderImage()
 	Camera c;
 	int size_2 = C_IMAGE_SIZE / C_IMAGE_SIDE;
 	SceneManager Scene;
+	int numberTriangles = Scene.getNumberTriangles();
+
 	Triangle *sceneTriangles = Scene.getScene();
 	glm::vec3* startPoint = &c.position;
 	glm::vec3* direction;
@@ -69,22 +71,25 @@ void renderImage()
 			direction = &glm::normalize(glm::vec3(0.f, dirY, dirZ) - *startPoint);
 	
 			
-			image[i] += getPixelVal(startPoint, direction, sceneTriangles, count);
+			image[i] += getPixelVal(startPoint, direction, sceneTriangles, count, numberTriangles);
 		}
-
 		maxR = image[i].x > maxR ? image[i].x : maxR;
 		maxG = image[i].y > maxG ? image[i].y : maxG;
 		maxB = image[i].z > maxB ? image[i].z : maxB;
 	}
-
 	normalizeImage(image, maxR, maxG, maxB, C_IMAGE_SIZE);
 	saveImage( image, C_IMAGE_SIZE/ C_IMAGE_SIDE);
+	
+	delete[] image;
 }
 
 
-glm::vec3 getPixelVal(glm::vec3* start, glm::vec3* dir, Triangle *scene, int count)
-{	
-	if (count >= C_MAX_BOUNCE)return glm::vec3(0.f,0.f,0.f);
+glm::vec3 getPixelVal(glm::vec3* start, glm::vec3* dir, Triangle *scene, int count,int numberTriangles)
+{
+	//This is a simplified model, The ray should "carry" the importance 
+	float importanceVal = 0.75f / (count+1);
+	if (count >= C_MAX_BOUNCE ||( (count>= C_MAX_BOUNCE/2) 
+		&& getRandomFloatAzi()*2 < importanceVal))return glm::vec3(0.f,0.f,0.f);
 	++count;
 
 	glm::vec3 colorLocal = glm::vec3(0.f, 0.f, 0.f);
@@ -92,23 +97,23 @@ glm::vec3 getPixelVal(glm::vec3* start, glm::vec3* dir, Triangle *scene, int cou
 	glm::vec3 normal = glm::vec3(0.f, 0.f, 0.f);
 	float dimVal = 1.f;
 	Material material;
-	colorLocal = triangleIntersect(start, dir, newStart, normal, scene, material);
-	bool hitLight = castShadowRay(&newStart, scene, dimVal);
+	colorLocal = triangleIntersect(start, dir, newStart, normal, scene, material, numberTriangles);
+	bool hitLight = castShadowRay(&newStart, scene, dimVal, numberTriangles);
 	colorLocal = hitLight ? colorLocal * Light::getLightstrength() * dimVal : glm::vec3(0.f, 0.f, 0.f);
-	//std::cout << material->isSpecular << std::endl;
+	
 	if (material.isLambert)
 	{
 		dir = &getRayBounceLambert();
-		return colorLocal + (0.6f / count)*getPixelVal(&newStart, dir, scene, count);
+		return colorLocal + importanceVal*getPixelVal(&newStart, dir, scene, count, numberTriangles);
 	}
 	else if (material.isSpecular)
 	{
 		
 		dir = &getRayBounceSpecular(dir, &normal);
-		return colorLocal + getPixelVal(&newStart, dir, scene, count);
+		return colorLocal + getPixelVal(&newStart, dir, scene, count, numberTriangles);
 	}
 
-	return colorLocal + (0.6f/count)*getPixelVal(&newStart, dir, scene, count);
+	return colorLocal + importanceVal*getPixelVal(&newStart, dir, scene, count, numberTriangles);
 }
 
 

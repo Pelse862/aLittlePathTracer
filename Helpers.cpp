@@ -72,21 +72,21 @@ float getRandomsStepVal(int maxStep)
 	return distance(generator);
 }
 
-bool castShadowRay(glm::vec3 * triangleHitPosition, Triangle *triangles,float &dimVal)
+bool castShadowRay(glm::vec3 * triangleHitPosition, Triangle *triangles,float &dimVal,int numberTriangles)
 {
 	glm::vec3 LightPos = Light::getLightPosition();
 	Material material;
 	glm::vec3 shadowRayDir = glm::normalize(LightPos - *triangleHitPosition );
 	glm::vec3 newHitPos, Normal;
 	float lenLight2Intersect = 0;
-	triangleIntersect(triangleHitPosition, &shadowRayDir, newHitPos, Normal, triangles, material);
+	triangleIntersect(triangleHitPosition, &shadowRayDir, newHitPos, Normal, triangles, material, numberTriangles);
 	lenLight2Intersect = glm::length(LightPos - *triangleHitPosition);
-	dimVal = 1- lenLight2Intersect / 10;
+	dimVal = 1 - lenLight2Intersect / 9.6f;
 	bool hit = lenLight2Intersect < glm::length(*triangleHitPosition - newHitPos)
 				? true : false;
 	return hit;
 }
-glm::vec3 triangleIntersect(glm::vec3* start, glm::vec3* dir, glm::vec3 &newStartPos, glm::vec3 &normal, Triangle *triangles, Material &material)
+glm::vec3 triangleIntersect(glm::vec3* start, glm::vec3* dir, glm::vec3 &newStartPos, glm::vec3 &normal, Triangle *triangles, Material &material,int numberTriangles)
 {
 	glm::vec3 e1 = glm::vec3(0.f, 0.f, 0.f);
 	glm::vec3 e2 = glm::vec3(0.f, 0.f, 0.f);
@@ -105,7 +105,8 @@ glm::vec3 triangleIntersect(glm::vec3* start, glm::vec3* dir, glm::vec3 &newStar
 	glm::vec3 D = glm::normalize(*dir);
 	int hitIs = 0;
 	bool closer = false;
-	for (int i = 0; i < 12; ++i)
+	
+	for (int i = 0; i < numberTriangles; ++i)
 	{
 		Triangle triangle = triangles[i];
 
